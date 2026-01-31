@@ -3,7 +3,7 @@
 This file summarizes what each tracked file/folder is for. Keep it updated whenever files are added, removed, or change purpose.
 
 ## Quick Setup
-1. Copy `.env.example` to `backend/.env` and fill in your keys.
+1. Copy `backend/.env.example` to `backend/.env` and fill in your keys.
 2. Install backend deps: `cd backend && pip install -r requirements.txt`.
 3. Install frontend deps: `cd frontend && npm install`.
 4. Start everything: `./start.sh` (starts PocketBase, backend, frontend).
