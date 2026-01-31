@@ -12,6 +12,12 @@ This file summarizes what each tracked file/folder is for. Keep it updated whene
 - `ANTHROPIC_API_KEY`: Anthropic API key used for extraction and chat.
 - `POCKETBASE_URL`: PocketBase base URL (for example `http://127.0.0.1:8090`).
 
+## Tests
+- Run all tests: `./run-tests.sh`
+- Backend only: `cd backend && python -m pytest tests/ -v`
+- Frontend only: `cd frontend && npx vitest run`
+- Exclude paid Anthropic tests: `./run-tests.sh` (default) or `cd backend && python -m pytest tests/ -v -m "not anthropic_api"`
+
 ## Root
 - `start.sh`: starts PocketBase (if present), backend (uvicorn), and frontend (Vite), opens the Vite URL, and tails logs.
 - `stop.sh`: stops processes recorded in `.pids` and cleans up the pidfile.
