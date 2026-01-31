@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer utilities {
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-auto:hover {
+    scrollbar-width: thin;
+  }
+  .scrollbar-auto::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-auto::-webkit-scrollbar-thumb {
+    background: var(--color-border-medium);
+    border-radius: 3px;
+  }
+}
+
+@font-face {
+  font-family: "Geist Sans";
+  src: url("/node_modules/geist/dist/fonts/geist-sans/Geist-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Sans";
+  src: url("/node_modules/geist/dist/fonts/geist-sans/Geist-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Sans";
+  src: url("/node_modules/geist/dist/fonts/geist-sans/Geist-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Sans";
+  src: url("/node_modules/geist/dist/fonts/geist-sans/Geist-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand */
+  --color-brand-primary: #C2552D;
+
+  /* Backgrounds */
+  --color-bg-cream: #F7F4F1;
+  --color-bg-off-white: #FEFCFB;
+  --color-bg-white: #FFFFFF;
+
+  /* Text */
+  --color-text-primary: #2D2926;
+  --color-text-body: #5C5651;
+  --color-text-secondary: #8A847E;
+
+  /* Accents */
+  --color-teal: #1A7B7A;
+  --color-sage: #87A96B;
+  --color-amber: #E09F3E;
+
+  /* Borders */
+  --color-border-light: #C7C4C0;
+  --color-border-medium: #A89F91;
+
+  /* States */
+  --color-success: #C2552D;
+  --color-progress: #87A96B;
+  --color-warning: #E09F3E;
+  --color-error: #B83C3C;
+  --color-info: #1A7B7A;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

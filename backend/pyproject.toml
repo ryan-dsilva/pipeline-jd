@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+markers = [
+    "anthropic_api: Tests that call real Anthropic API (costs money)",
+]
+asyncio_mode = "auto"

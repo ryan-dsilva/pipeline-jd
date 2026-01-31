@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+anthropic
+pocketbase
+python-dotenv
+pytest
+pytest-asyncio
+httpx
+pydantic
