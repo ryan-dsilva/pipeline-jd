@@ -81,6 +81,7 @@ This file summarizes what each tracked file/folder is for. Keep it updated whene
 
 ## pocketbase/
 - `pocketbase/pocketbase`: PocketBase binary.
+- `pocketbase/README.md`: how to apply migrations and recreate schema locally.
 - `pocketbase/pb_data/data.db`: main PocketBase SQLite database (not source-controlled).
 - `pocketbase/pb_data/auxiliary.db`: PocketBase auxiliary SQLite database (not source-controlled).
 - `pocketbase/pb_data/types.d.ts`: auto-generated TypeScript type definitions for PocketBase schema.
