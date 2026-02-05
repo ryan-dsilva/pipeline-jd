@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import { Markdown } from "tiptap-markdown";
 import { useEffect } from "react";
 
 interface Props {
@@ -18,18 +19,19 @@ export default function SectionEditor({
     extensions: [
       StarterKit,
       Link.configure({ openOnClick: false }),
+      Markdown,
     ],
     content,
     editable,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      onChange((editor.storage as any).markdown.getMarkdown());
     },
   });
 
   useEffect(() => {
     if (editor && !editor.isFocused) {
-      const current = editor.getHTML();
-      if (current !== content) {
+      const current = (editor.storage as any).markdown.getMarkdown();
+      if (current.trim() !== content.trim()) {
         editor.commands.setContent(content);
       }
     }
@@ -81,7 +83,7 @@ export default function SectionEditor({
       )}
       <EditorContent
         editor={editor}
-        className="prose prose-sm max-w-none p-3 min-h-[100px] focus:outline-none"
+        className="prose prose-sm max-w-none p-3 min-h-[100px] focus:outline-none [&_li_p]:m-0 [&_p]:my-1.5 [&_ul]:my-2 [&_ol]:my-2"
       />
     </div>
   );

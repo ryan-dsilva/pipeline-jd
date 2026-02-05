@@ -25,7 +25,7 @@ export default function JobsPage() {
     for (const j of jobs) {
       if (j.pipeline_stage === "applied") c.applied++;
       else if (j.pipeline_stage === "ignored") c.ignored++;
-      else if (j.pipeline_stage === "queue") c.not_processed++;
+      else if (j.pipeline_stage === "queue" && j.extraction_status === "failed") c.not_processed++;
       else if (ACTIVE_STAGES.has(j.pipeline_stage)) c.active++;
     }
     return c;
@@ -40,7 +40,7 @@ export default function JobsPage() {
       case "ignored":
         return jobs.filter((j) => j.pipeline_stage === "ignored");
       case "not_processed":
-        return jobs.filter((j) => j.pipeline_stage === "queue");
+        return jobs.filter((j) => j.pipeline_stage === "queue" && j.extraction_status === "failed");
     }
   }, [jobs, tab]);
 

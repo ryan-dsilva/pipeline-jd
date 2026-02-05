@@ -25,7 +25,9 @@ export type Verdict = (typeof VERDICTS)[number];
 
 export interface JobCreate {
   jd_url: string;
-  jd_text: string;
+  jd_text?: string;
+  jd_fetch_status?: string;
+  jd_fetch_confidence?: number;
 }
 
 export interface Job {
@@ -42,6 +44,8 @@ export interface Job {
   hours: number | null;
   verdict: Verdict | null;
   extraction_status: string;
+  jd_fetch_status: string;
+  jd_fetch_confidence: number | null;
   created: string;
   updated: string;
 }

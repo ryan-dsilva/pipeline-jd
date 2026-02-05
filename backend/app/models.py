@@ -24,7 +24,9 @@ VERDICTS = ["STRONG PURSUE", "PURSUE", "PASS", "HARD PASS"]
 
 class JobCreate(BaseModel):
     jd_url: str
-    jd_text: str
+    jd_text: Optional[str] = None
+    jd_fetch_status: str = "not_attempted"
+    jd_fetch_confidence: Optional[float] = None
 
     @field_validator("jd_url", mode="before")
     @classmethod
@@ -39,11 +41,20 @@ class JobCreate(BaseModel):
     @field_validator("jd_text", mode="before")
     @classmethod
     def validate_jd_text(cls, v):
-        if not v or not v.strip():
-            raise ValueError("jd_text must not be empty")
+        if v is None or v.strip() == "":
+            return None
         if len(v.strip()) < 50:
-            raise ValueError("jd_text must be at least 50 characters")
-        return v
+            raise ValueError("jd_text must be at least 50 characters if provided")
+        return v.strip()
+
+    @model_validator(mode="after")
+    def check_text_or_fetch_status(self):
+        """Require either jd_text OR successful fetch status."""
+        if not self.jd_text and self.jd_fetch_status == "not_attempted":
+            raise ValueError(
+                "Must provide jd_text or complete fetch first (use /fetch-jd endpoint)"
+            )
+        return self
 
 
 class JobStageUpdate(BaseModel):
@@ -53,6 +64,59 @@ class JobStageUpdate(BaseModel):
 class JobUpdate(BaseModel):
     company: Optional[str] = None
     role: Optional[str] = None
+
+
+# ── Job fetch models ─────────────────────────────────────────────
+
+class JobFetchRequest(BaseModel):
+    jd_url: str
+
+    @field_validator("jd_url", mode="before")
+    @classmethod
+    def validate_jd_url(cls, v):
+        if not v or not v.strip():
+            raise ValueError("jd_url must not be empty")
+        v = v.strip()
+        if not v.startswith(("http://", "https://")):
+            raise ValueError("jd_url must be a valid HTTP(S) URL")
+        return v
+
+
+class SectionHeadingResponse(BaseModel):
+    """A detected section heading with word count."""
+
+    name: str
+    word_count: int
+
+
+class JobFetchResponse(BaseModel):
+    success: bool
+    jd_text: Optional[str] = None
+    is_complete: bool
+    confidence: float
+    word_count: int = 0
+    html_word_count: int = 0  # Total words in raw HTML (for extraction ratio)
+    section_headings: list[SectionHeadingResponse] = []
+    method_used: str = "unknown"
+    error_message: Optional[str] = None
+
+
+# ── Text analysis models (for edit mode) ─────────────────────────
+
+class JobTextAnalyzeRequest(BaseModel):
+    jd_text: str
+
+    @field_validator("jd_text", mode="before")
+    @classmethod
+    def validate_jd_text(cls, v):
+        if not v or not v.strip():
+            raise ValueError("jd_text must not be empty")
+        return v.strip()
+
+
+class JobTextAnalyzeResponse(BaseModel):
+    word_count: int
+    section_headings: list[SectionHeadingResponse]
 
 
 class JobResponse(BaseModel):
@@ -70,6 +134,8 @@ class JobResponse(BaseModel):
     hours: Optional[int] = None
     verdict: Optional[str] = None
     extraction_status: str = "pending"
+    jd_fetch_status: str = "not_attempted"
+    jd_fetch_confidence: Optional[float] = None
     created: datetime
     updated: datetime
 

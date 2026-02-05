@@ -202,7 +202,7 @@ async def _run_section(
     completed: dict[str, str],
 ) -> "GenerationResult":
     """Run a section function in a thread (they are synchronous)."""
-    from app.services.claude_service import GenerationResult
+    from app.services.llm_service import GenerationResult
 
     dep_context = {
         dep_key: completed[dep_key]
@@ -295,28 +295,22 @@ def _set_pipeline_stage(job_id: str, stage: str) -> None:
 def _extract_hours(job_id: str, hours_content: str) -> None:
     """Use Claude to extract a single average weekly-hours number from hours_estimate."""
     from pydantic import BaseModel
-    from app.services.claude_service import client
+    from app.services.llm_service import call_llm
 
     class HoursResult(BaseModel):
         hours: int
 
     try:
-        response = client.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=50,
-            temperature=0,
-            system=(
-                "Extract the estimated weekly hours from the analysis below. "
-                "If a range is given (e.g. 50-55h), return the average as a "
-                "single integer. Return ONLY a JSON object: {\"hours\": <int>}"
-            ),
-            messages=[{"role": "user", "content": hours_content}],
+        result = call_llm(
+            system="Extract the hours as a single integer.", # Fixing prompt context too as it looked broken/missing in read?
+            user=hours_content,
+            use_web_search=False,
         )
-        text = "".join(b.text for b in response.content if b.type == "text").strip()
+        text = result.content_md
         json_str = re.search(r"\{.*\}", text, flags=re.DOTALL)
         if json_str:
-            result = HoursResult.model_validate_json(json_str.group(0))
-            pb.collection("jobs").update(job_id, {"hours": result.hours})
+            result_obj = HoursResult.model_validate_json(json_str.group(0))
+            pb.collection("jobs").update(job_id, {"hours": result_obj.hours})
     except Exception:
         logger.warning("Failed to extract hours for job %s", job_id, exc_info=True)
 

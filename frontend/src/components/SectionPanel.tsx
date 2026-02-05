@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { marked } from "marked";
 import type { Section, SectionDefinition } from "../lib/types";
 import { regenerateSection, updateSection } from "../lib/api";
+import { playBloop } from "../lib/sound";
 import SectionEditor from "./SectionEditor";
 import CollapsibleCard from "./ui/CollapsibleCard";
 import IconButton from "./ui/IconButton";
@@ -37,6 +38,7 @@ export default function SectionPanel({
   defaultExpanded = true,
 }: SectionPanelProps) {
   const [editing, setEditing] = useState(false);
+  const [viewRaw, setViewRaw] = useState(false);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
@@ -57,8 +59,9 @@ export default function SectionPanel({
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setDraft(contentHtml);
+    setDraft(section?.content_md || "");
     setEditing(true);
+    setViewRaw(false);
   };
 
   const handleSave = async () => {
@@ -66,6 +69,7 @@ export default function SectionPanel({
     try {
       await updateSection(jobId, definition.key, draft);
       setEditing(false);
+      playBloop();
       onUpdate();
     } catch {
       /* keep editing */
@@ -79,6 +83,7 @@ export default function SectionPanel({
     setRegenerating(true);
     try {
       await regenerateSection(jobId, definition.key);
+      playBloop();
       onUpdate();
     } catch {
       /* ignore */
@@ -87,15 +92,28 @@ export default function SectionPanel({
     }
   };
 
+  const toggleViewRaw = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setViewRaw(!viewRaw);
+  };
+
   const actions = (
     <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
       {status === "complete" && !editing && (
-        <button
-          onClick={handleEdit}
-          className="px-2 py-0.5 text-xs rounded text-text-secondary hover:text-text-primary hover:bg-cream"
-        >
-          Edit
-        </button>
+        <>
+          <button
+            onClick={toggleViewRaw}
+            className="px-2 py-0.5 text-xs rounded text-text-secondary hover:text-text-primary hover:bg-cream mr-1"
+          >
+            {viewRaw ? "View Markdown" : "View Text"}
+          </button>
+          <button
+            onClick={handleEdit}
+            className="px-2 py-0.5 text-xs rounded text-text-secondary hover:text-text-primary hover:bg-cream"
+          >
+            Edit
+          </button>
+        </>
       )}
       {status !== "running" && (
         <IconButton
@@ -167,11 +185,17 @@ export default function SectionPanel({
           </div>
         </div>
       ) : status === "complete" && section?.content_md ? (
-        <div
-          className="prose prose-sm max-w-none text-text-body"
-          // Content sourced from our own backend (Claude-generated markdown)
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
+        viewRaw ? (
+          <pre className="whitespace-pre-wrap font-mono text-xs bg-gray-50 p-3 rounded border border-gray-200 overflow-x-auto text-text-body">
+            {section.content_md}
+          </pre>
+        ) : (
+          <div
+            className="prose prose-sm max-w-none text-text-body [&_li_p]:m-0 [&_p]:my-1.5 [&_ul]:my-2 [&_ol]:my-2"
+            // Content sourced from our own backend (Claude-generated markdown)
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
+          />
+        )
       ) : null}
     </CollapsibleCard>
   );

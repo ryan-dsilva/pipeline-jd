@@ -1,10 +1,15 @@
-import NewJDForm from "../components/NewJDForm";
+import { useNavigate } from "react-router-dom";
+import NewJDWizard from "../components/NewJDWizard";
 
 export default function NewJobPage() {
+  const navigate = useNavigate();
+
   return (
     <div>
-      <h1 className="text-xl font-semibold text-text-primary mb-6">New Job</h1>
-      <NewJDForm />
+      <NewJDWizard
+        open={true}
+        onClose={() => navigate("/jobs")}
+      />
     </div>
   );
 }

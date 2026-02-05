@@ -3,6 +3,7 @@ import React from 'react';
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: 'text' | 'textarea' | 'url';
   error?: boolean;
+  rows?: number;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

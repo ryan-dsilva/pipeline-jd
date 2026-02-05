@@ -9,6 +9,7 @@ import Button from "./ui/Button";
 import Input from "./ui/Input";
 import { SkeletonTableRow } from "./ui/Skeleton";
 import { startPipelineSSE } from "../lib/api";
+import { playBloop } from "../lib/sound";
 
 interface Props {
   jobs: Job[];
@@ -141,6 +142,7 @@ export default function JobsTable({
         () => {},
         () => {
           setRerunning(null);
+          playBloop();
           onRefresh?.();
         },
         () => setRerunning(null),

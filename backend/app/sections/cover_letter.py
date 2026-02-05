@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from app.services.claude_service import GenerationResult, call_claude
+from app.services.llm_service import GenerationResult, call_llm
 from app.services.reference_loader import load_references
 
 if TYPE_CHECKING:
@@ -52,7 +52,12 @@ Produce:
 2. **Why You Are The Solution:** 2-3 strongest proof points from the LinkedIn profile that directly address these needs.
 3. **Pep Talk:** Why this role is exciting, realistic hours expectations, potential impact, and what it means for the candidate's career.
 """
-    return call_claude(system=system, user=user, max_tokens=3000, temperature=0.4)
+    result = call_llm(
+        system=system,
+        user=user,
+        temperature=0.4,
+    )
+    return result
 
 
 # ── 2. Resume Headlines ─────────────────────────────────────────
@@ -89,7 +94,7 @@ Gold Standard Examples:
 
 Tailor each headline to emphasize different aspects relevant to this specific role.
 """
-    return call_claude(system=system, user=user, max_tokens=2000, temperature=0.5)
+    return call_llm(system=system, user=user, max_tokens=2000, temperature=0.5)
 
 
 # ── 3. Introduction (3 options) ──────────────────────────────────
@@ -132,7 +137,7 @@ Requirements:
 - Use contractions where natural
 - Avoid em dashes; use commas or parentheses
 """
-    return call_claude(system=system, user=user, max_tokens=2000, temperature=0.5)
+    return call_llm(system=system, user=user, max_tokens=2000, temperature=0.5)
 
 
 # ── 4. Problem Statement (2 options) ─────────────────────────────
@@ -174,7 +179,7 @@ Requirements:
 - 2-3 sentences each
 - Consultative tone
 """
-    return call_claude(system=system, user=user, max_tokens=2000, temperature=0.5)
+    return call_llm(system=system, user=user, max_tokens=2000, temperature=0.5)
 
 
 # ── 5. Proof Points (2 options) ──────────────────────────────────
@@ -216,7 +221,7 @@ Requirements:
 - Include measurable outcomes
 - Connect proof to the specific role's needs
 """
-    return call_claude(system=system, user=user, max_tokens=2000, temperature=0.5)
+    return call_llm(system=system, user=user, max_tokens=2000, temperature=0.5)
 
 
 # ── 6. Why Now (2 options) ───────────────────────────────────────
@@ -258,7 +263,7 @@ Requirements:
 - Connect to a concrete insight, not generic enthusiasm
 - 2-3 sentences each
 """
-    return call_claude(system=system, user=user, max_tokens=2000, temperature=0.5)
+    return call_llm(system=system, user=user, max_tokens=2000, temperature=0.5)
 
 
 # ── 7. Closing (2 options) ───────────────────────────────────────
@@ -295,7 +300,7 @@ Requirements:
 - Include a FOMO signal: what is uniquely valuable about how the candidate thinks
 - Low-pressure call to action
 """
-    return call_claude(system=system, user=user, max_tokens=1500, temperature=0.5)
+    return call_llm(system=system, user=user, max_tokens=1500, temperature=0.5)
 
 
 # ── 8. Assembled Drafts (2 options) ──────────────────────────────
@@ -346,4 +351,4 @@ Instructions:
 6. End with empty ## FINAL VERSION section
 7. Ensure no em dashes, use contractions naturally, vary sentence structure
 """
-    return call_claude(system=system, user=user, max_tokens=4000, temperature=0.4)
+    return call_llm(system=system, user=user, max_tokens=4000, temperature=0.4)

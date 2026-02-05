@@ -17,6 +17,40 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 // ── Jobs ────────────────────────────────────────────────────────
 
+export interface SectionHeading {
+  name: string;
+  word_count: number;
+}
+
+export interface JobFetchResult {
+  success: boolean;
+  jd_text: string | null;
+  is_complete: boolean;
+  confidence: number;
+  word_count: number;
+  html_word_count: number;
+  section_headings: SectionHeading[];
+  method_used: string;
+  error_message: string | null;
+}
+
+export interface JobTextAnalyzeResult {
+  word_count: number;
+  section_headings: SectionHeading[];
+}
+
+export const fetchJobDescription = (jd_url: string) =>
+  request<JobFetchResult>("/jobs/fetch-jd", {
+    method: "POST",
+    body: JSON.stringify({ jd_url }),
+  });
+
+export const analyzeJobText = (jd_text: string) =>
+  request<JobTextAnalyzeResult>("/jobs/analyze-text", {
+    method: "POST",
+    body: JSON.stringify({ jd_text }),
+  });
+
 export const createJob = (data: JobCreate) =>
   request<Job>("/jobs", { method: "POST", body: JSON.stringify(data) });
 

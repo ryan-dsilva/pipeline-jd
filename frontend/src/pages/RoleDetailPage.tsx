@@ -4,6 +4,7 @@ import { getJob, getSectionDefinitions } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { useSSE } from "../hooks/useSSE";
 import { useSidebarState } from "../hooks/useSidebarState";
+import { playBloop } from "../lib/sound";
 import RoleHeader from "../components/RoleHeader";
 import SectionNav from "../components/SectionNav";
 import SectionPanel from "../components/SectionPanel";
@@ -33,6 +34,38 @@ export default function RoleDetailPage() {
   const { data: definitions } = useApi(() => getSectionDefinitions(), []);
   const sse = useSSE();
 
+  const handleSectionClick = useCallback((key: string) => {
+    const el = document.getElementById(`section-${key}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveSection(key);
+    }
+  }, []);
+
+  const handleRunAnalysis = useCallback(() => {
+    sse.start(id!, "analyze");
+    const check = setInterval(() => {
+      if (!sse.running) {
+        clearInterval(check);
+        playBloop();
+        refresh();
+      }
+    }, 1000);
+  }, [id, sse, refresh]);
+
+  // Auto-start analysis if job is in queue stage with completed extraction
+  useEffect(() => {
+    if (
+      job &&
+      job.pipeline_stage === "queue" &&
+      job.extraction_status === "complete" &&
+      !sse.running &&
+      !sse.error
+    ) {
+      handleRunAnalysis();
+    }
+  }, [job?.id, job?.pipeline_stage, job?.extraction_status, job, sse.running, sse.error, handleRunAnalysis]);
+
   // Scroll spy with IntersectionObserver
   useEffect(() => {
     if (!mainRef.current) return;
@@ -56,29 +89,12 @@ export default function RoleDetailPage() {
     return () => observer.disconnect();
   }, [job, definitions]);
 
-  const handleSectionClick = useCallback((key: string) => {
-    const el = document.getElementById(`section-${key}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      setActiveSection(key);
-    }
-  }, []);
-
-  const handleRunAnalysis = useCallback(() => {
-    sse.start(id!, "analyze");
-    const check = setInterval(() => {
-      if (!sse.running) {
-        clearInterval(check);
-        refresh();
-      }
-    }, 1000);
-  }, [id, sse, refresh]);
-
   const handleRunCoverLetter = useCallback(() => {
     sse.start(id!, "cover-letter");
     const check = setInterval(() => {
       if (!sse.running) {
         clearInterval(check);
+        playBloop();
         refresh();
       }
     }, 1000);

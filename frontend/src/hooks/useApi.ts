@@ -18,9 +18,21 @@ export function useApi<T>(
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
 
+  // Reset state when navigation dependencies change
+  useEffect(() => {
+    setData(null);
+    setLoading(true);
+    setError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps]);
+
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    
+    // Only trigger loading state if we don't have data yet (initial load)
+    if (!data) {
+      setLoading(true);
+    }
     setError(null);
 
     fetcher()
